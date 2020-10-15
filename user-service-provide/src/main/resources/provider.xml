@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans.xsd
+                            http://dubbo.apache.org/schema/dubbo
+                            http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
+
+    <!--    指定当前服务应用的名字（不可同名）-->
+    <dubbo:application name="user-service-provide"></dubbo:application>
+
+    <!--    指定注册中心的位置（二选一）-->
+    <!--    <dubbo:registry address="zookeeper://127.0.0.1:2181"></dubbo:registry>-->
+    <dubbo:registry protocol="zookeeper" address="127.0.0.1:2181"></dubbo:registry>
+
+    <!--    指定通信规则（通信协议、通信端口）-->
+    <dubbo:protocol name="dubbo" port="20880"></dubbo:protocol>
+
+    <!--    暴露服务 ref:指向服务的真正实现类,timeout：连接注册中心响应超时，version:多版本控制,可实现灰度发布-->
+    <dubbo:service interface="com.xlj.service.UserService" ref="userServiceImpl" timeout="1000" version="1.0.0"></dubbo:service>
+    <!--    服务的真正实现-->
+    <bean id="userServiceImpl" class="com.xlj.service.impl.UserServiceImpl"></bean>
+
+    <!--    新版本服务注册-->
+    <dubbo:service interface="com.xlj.service.UserService" ref="userServiceImpl1" version="2.0.0"></dubbo:service>
+    <bean id="userServiceImpl1" class="com.xlj.service.impl.UserServiceImpl1"></bean>
+
+
+    <!--    连接监控中心-->
+    <dubbo:monitor protocol="registry"></dubbo:monitor>
+
+    <!--    启动时检查注册中心是否启动，注册中心不存在时是否报错-->
+    <dubbo:registry check="false"></dubbo:registry>
+
+</beans>
